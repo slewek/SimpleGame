@@ -1,10 +1,24 @@
 package com.example.game
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Rect
+import android.content.res.Resources
+import android.graphics.*
+import com.example.simplegame.R
 
-class GameStateAdapter {
+class GameStateAdapter(private val resources: Resources) {
+
+  private val bmpBlood = BitmapFactory.decodeResource(resources,R.drawable.blood1)
+  private val scale = resources.displayMetrics.density
+  private val paint = Paint().apply {
+    typeface = Typeface.create(
+      "Helvetica",
+      Typeface.BOLD)
+      color = Color.RED
+              flags = Paint.ANTI_ALIAS_FLAG
+              textAlign = Paint.Align.CENTER
+              textSize = 40f * scale
+  }
+
+
   fun drawSprite(canvas: Canvas, sprite: Sprite) {
     val srcX = sprite.currentFrame * sprite.width
     val srcY = Sprite.DIRECTION_TO_ANIMATION_MAP[sprite.getDirection()] * sprite.height
@@ -25,8 +39,30 @@ class GameStateAdapter {
 
   fun draw(canvas: Canvas, gameState: GameState) {
     canvas.drawColor(Color.BLACK)
+    for(temp in gameState.temps ){
+      drawTempSprite(canvas, temp)
+    }
     for (sprite in gameState.sprites) {
       drawSprite(canvas, sprite)
     }
+    if (gameState.isGameOver()) {
+      val x = (canvas.width / 2).toFloat()
+      val y = (canvas.height / 2).toFloat()
+      if (gameState.endState == EndState.BAD_WINS) {
+        canvas.drawText(resources.getString(R.string.good_wins), x, y, paint)
+      } else if (gameState.endState == EndState.GOOD_WINS) {
+        canvas.drawText(resources.getString(R.string.good_wins), x, y, paint)
+      }
+    }
+  }
+
+  private fun drawTempSprite(canvas: Canvas, temp: TempSprite) {
+    if (temp.canBeRemoved()) return
+    canvas.drawBitmap(
+      bmpBlood,
+      temp.x - bmpBlood.width / 2,
+      temp.y - bmpBlood.height / 2,
+      null
+    )
   }
 }

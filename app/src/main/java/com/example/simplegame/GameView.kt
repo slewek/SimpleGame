@@ -2,11 +2,17 @@ package com.example.simplegame
 
 import android.content.Context
 import android.graphics.Canvas
+import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import com.example.game.GameControllerInterface
 
 class GameView(context : Context) : SurfaceView(context) {
-  fun addCallback(callback: SurfaceHolder.Callback) {
+  private var lastClick = 0L
+  private var gameControllerCallback: GameControllerInterface? = null
+
+  fun addCallback(callback: GameControllerInterface?) {
+    gameControllerCallback = callback
     holder.addCallback(callback)
   }
   fun drawInHolder(call: (Canvas) -> Unit) {
@@ -17,5 +23,13 @@ class GameView(context : Context) : SurfaceView(context) {
     } finally {
       c?.let { holder.unlockCanvasAndPost(it) }
     }
+  }
+  override fun onTouchEvent(event: MotionEvent?): Boolean {
+    if (event == null) return super.onTouchEvent(event)
+    if (System.currentTimeMillis() - lastClick > 500) {
+      lastClick = System.currentTimeMillis()
+      gameControllerCallback?.clickHere(event.x,event.y)
+    }
+    return super.onTouchEvent(event)
   }
 }

@@ -9,7 +9,8 @@ class Sprite(
   var x: Int,
   var y: Int,
   var xSpeed: Int,
-  var ySpeed: Int
+  var ySpeed: Int,
+  val good: Boolean
 ) {
   companion object {
     const val BMP_ROWS = 4
@@ -38,5 +39,9 @@ class Sprite(
   fun getDirection(): Int {
     val dirDouble = atan2(xSpeed.toDouble(), ySpeed.toDouble()) / (Math.PI / 2) + 2
     return dirDouble.roundToInt() % BMP_ROWS
+  }
+
+  fun isCollision(x2: Float, y2: Float): Boolean {
+    return x2 > x && x2 < x + width && y2 > y && y2 < y + height
   }
 }
