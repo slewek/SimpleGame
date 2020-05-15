@@ -37,14 +37,37 @@ class GameState {
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.bad5, false))
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.bad6, false))
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.good1, true))
+   /*
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.good2, true))
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.good3, true))
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.good4, true))
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.good5, true))
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.good6, true))
+    */
+  }
+
+  private fun checkCollision(){
+    val spritesToRemove = mutableSetOf<Sprite>()
+    for (spriteA in sprites) {
+      if (spriteA.good) {
+        for (spriteB in sprites) {
+          if (!spriteB.good) {
+            if (spriteA.isCollision(spriteB)) {
+              spritesToRemove.add(spriteA)
+              spritesToRemove.add(spriteB)
+            }
+          }
+        }
+      }
+    }
+    for (sprite in spritesToRemove) {
+      sprites.remove(sprite)
+      temps.add(TempSprite(sprite.x.toFloat(), sprite.y.toFloat()))
+    }
   }
 
   fun update(maxWidth: Int, maxHeight: Int) {
+    checkCollision()
     if(isGameOver()) return
     for (sprite in sprites) {
       sprite.update(maxWidth, maxHeight)
@@ -58,6 +81,7 @@ class GameState {
   }
 
   fun killSprite(x: Float, y: Float) {
+    /*
     if (isGameOver()) return
     for (i in sprites.lastIndex downTo 0) {
       val sprite = sprites[i]
@@ -67,6 +91,8 @@ class GameState {
         break
       }
     }
+
+     */
   }
 
   private fun calcEnd() {
@@ -80,5 +106,9 @@ class GameState {
   }
   fun isGameOver(): Boolean {
     return endState != EndState.NO
+  }
+
+  fun setGoodSpeed(x: Float, y: Float, maxWidth: Int, maxHeight: Int) {
+    sprites.firstOrNull { it.good }?.setSpeed(x, y, maxWidth.toFloat(), maxHeight.toFloat())
   }
 }

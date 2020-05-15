@@ -37,7 +37,8 @@ class MainActivity : AppCompatActivity(), GameControllerInterface {
 
   @Synchronized
   override fun clickHere(x: Float, y: Float) {
-    gameState.killSprite(x,y)
+   // gameState.killSprite(x,y)
+    gameState.setGoodSpeed(x,y, gameView.width, gameView.height)
   }
 
   override fun surfaceDestroyed(holder: SurfaceHolder?) {
