@@ -39,6 +39,7 @@ class GameStateAdapter(private val resources: Resources) {
 
   fun draw(canvas: Canvas, gameState: GameState) {
     canvas.drawColor(Color.BLACK)
+    gameState.star?.let { drawStar(canvas, it) }
     for(temp in gameState.temps ){
       drawTempSprite(canvas, temp)
     }
@@ -64,5 +65,9 @@ class GameStateAdapter(private val resources: Resources) {
       temp.y - bmpBlood.height / 2,
       null
     )
+  }
+
+  private fun drawStar(canvas: Canvas, star: Star) {
+    canvas.drawBitmap(star.bmp, star.x.toFloat(), star.y.toFloat(), null)
   }
 }

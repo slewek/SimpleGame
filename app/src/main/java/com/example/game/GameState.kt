@@ -1,11 +1,16 @@
 package com.example.game
 
+import android.content.Context
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.example.simplegame.R
 import java.util.*
+import kotlin.collections.ArrayList
 
-class GameState {
+class GameState(var soundPlayer: SoundPlayer) {
+  var star: Star? = null
+  var starBmp : Bitmap? = null
   val temps = mutableListOf<TempSprite>()
   val sprites = mutableListOf<Sprite>()
   var endState = EndState.NO
@@ -37,6 +42,7 @@ class GameState {
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.bad5, false))
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.bad6, false))
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.good1, true))
+    starBmp = BitmapFactory.decodeResource(resources,R.drawable.star)
    /*
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.good2, true))
     sprites.add(createSprite(resources, maxWidth, maxHeight, R.drawable.good3, true))
@@ -46,8 +52,23 @@ class GameState {
     */
   }
 
-  private fun checkCollision(){
+  fun update(maxWidth: Int, maxHeight: Int) {
     val spritesToRemove = mutableSetOf<Sprite>()
+    star?.update(maxWidth, maxHeight)
+    if (star?.visible == false)
+      star = null
+
+    if (star?.visible == true) {
+      for (sprite in sprites) {
+        if (!sprite.good) {
+          if (sprite.isCollision(star)) {
+            spritesToRemove.add(sprite)
+            star = null
+            break
+          }
+        }
+      }
+    }
     for (spriteA in sprites) {
       if (spriteA.good) {
         for (spriteB in sprites) {
@@ -62,12 +83,13 @@ class GameState {
     }
     for (sprite in spritesToRemove) {
       sprites.remove(sprite)
+      if(!sprite.good){
+        soundPlayer.playBadDeath()
+      }else{
+        soundPlayer.playGoodDeath()
+      }
       temps.add(TempSprite(sprite.x.toFloat(), sprite.y.toFloat()))
     }
-  }
-
-  fun update(maxWidth: Int, maxHeight: Int) {
-    checkCollision()
     if(isGameOver()) return
     for (sprite in sprites) {
       sprite.update(maxWidth, maxHeight)
@@ -110,5 +132,18 @@ class GameState {
 
   fun setGoodSpeed(x: Float, y: Float, maxWidth: Int, maxHeight: Int) {
     sprites.firstOrNull { it.good }?.setSpeed(x, y, maxWidth.toFloat(), maxHeight.toFloat())
+  }
+
+  fun throwStar() {
+    if (isGameOver()) return
+    if (starBmp == null) return
+    for (sprite in sprites) {
+      if (sprite.good) {
+        val x = sprite.x + sprite.width/2 - starBmp!!.width/2
+        val y = sprite.y + sprite.height/2 - starBmp!!.height/2
+        star = Star(starBmp!!, x, y, sprite.xSpeed * 3, sprite.ySpeed *
+                3)
+      }
+    }
   }
 }
