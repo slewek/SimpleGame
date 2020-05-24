@@ -2,10 +2,11 @@ package com.example.simplegame
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.view.MotionEvent
-import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.example.game.GameControllerInterface
+
 
 class GameView(context : Context) : SurfaceView(context) {
   private var lastClick = 0L
@@ -19,7 +20,7 @@ class GameView(context : Context) : SurfaceView(context) {
     var c: Canvas? = null
     try {
       c = holder.lockCanvas()
-      call(c)
+      if(c != null) call(c)
     } finally {
       c?.let { holder.unlockCanvasAndPost(it) }
     }
@@ -31,5 +32,7 @@ class GameView(context : Context) : SurfaceView(context) {
       gameControllerCallback?.clickHere(event.x,event.y)
     }
     return super.onTouchEvent(event)
+  }
+  override fun onDraw(canvas: Canvas) { // A Simple Text Render to test the display
   }
 }

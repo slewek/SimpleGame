@@ -63,6 +63,7 @@ class GameState(var soundPlayer: SoundPlayer) {
         if (!sprite.good) {
           if (sprite.isCollision(star)) {
             spritesToRemove.add(sprite)
+            temps.add(TempSprite(sprite.x.toFloat() ,sprite.y.toFloat()))
             star = null
             break
           }
@@ -76,6 +77,8 @@ class GameState(var soundPlayer: SoundPlayer) {
             if (spriteA.isCollision(spriteB)) {
               spritesToRemove.add(spriteA)
               spritesToRemove.add(spriteB)
+              temps.add(TempSprite((spriteA.x.toFloat() + spriteB.x.toFloat())/2,
+                (spriteA.y.toFloat() + spriteB.y.toFloat())/2))
             }
           }
         }
@@ -88,7 +91,6 @@ class GameState(var soundPlayer: SoundPlayer) {
       }else{
         soundPlayer.playGoodDeath()
       }
-      temps.add(TempSprite(sprite.x.toFloat(), sprite.y.toFloat()))
     }
     if(isGameOver()) return
     for (sprite in sprites) {

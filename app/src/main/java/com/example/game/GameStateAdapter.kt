@@ -1,8 +1,15 @@
 package com.example.game
 
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
 import android.content.res.Resources
 import android.graphics.*
+import android.os.Handler
+import android.os.Looper
+import android.widget.EditText
 import com.example.simplegame.R
+
 
 class GameStateAdapter(private val resources: Resources) {
 
@@ -38,6 +45,7 @@ class GameStateAdapter(private val resources: Resources) {
   }
 
   fun draw(canvas: Canvas, gameState: GameState) {
+
     canvas.drawColor(Color.BLACK)
     gameState.star?.let { drawStar(canvas, it) }
     for(temp in gameState.temps ){
@@ -46,15 +54,7 @@ class GameStateAdapter(private val resources: Resources) {
     for (sprite in gameState.sprites) {
       drawSprite(canvas, sprite)
     }
-    if (gameState.isGameOver()) {
-      val x = (canvas.width / 2).toFloat()
-      val y = (canvas.height / 2).toFloat()
-      if (gameState.endState == EndState.BAD_WINS) {
-        canvas.drawText(resources.getString(R.string.good_wins), x, y, paint)
-      } else if (gameState.endState == EndState.GOOD_WINS) {
-        canvas.drawText(resources.getString(R.string.good_wins), x, y, paint)
-      }
-    }
+
   }
 
   private fun drawTempSprite(canvas: Canvas, temp: TempSprite) {
